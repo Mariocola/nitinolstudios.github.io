@@ -33,39 +33,36 @@ canvas#world{position:fixed;inset:0;display:block;touch-action:none}
 .hud>*{pointer-events:auto;flex-shrink:0}
 .logo{font-family:var(--disp);font-size:1.05rem;letter-spacing:.06em;white-space:nowrap;min-width:0;line-height:1.15}
 .logo em{font-style:normal;color:var(--teal)}
-/* counter under logo, clear of top controls */
-.outpost-counter{position:fixed;top:56px;left:12px;z-index:20;font-family:var(--disp);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;line-height:1.4;color:#ff4d5e;transition:color .4s ease;pointer-events:none;text-shadow:0 1px 8px rgba(0,0,0,.8)}
-.outpost-counter b{font-weight:700}
+/* objectives under minimap (top-right stack) */
+.outpost-counter{position:fixed;top:180px;right:10px;left:auto;z-index:20;font-family:var(--disp);font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;line-height:1.35;color:#ff4d5e;transition:color .4s ease;pointer-events:none;text-align:right;text-shadow:0 1px 8px rgba(0,0,0,.85)}
+.outpost-counter b{font-weight:700;display:block;font-size:.72rem;letter-spacing:.08em;margin-top:.1rem}
 .chip{display:flex;align-items:center;gap:.35rem;background:rgba(10,15,21,.9);border:1px solid var(--line);padding:.32rem .55rem;transition:transform .12s ease;min-height:36px;box-sizing:border-box}
 .chip.pulse{animation:chipP .45s ease}
 @keyframes chipP{0%{transform:scale(1)}30%{transform:scale(1.22)}100%{transform:scale(1)}}
-@keyframes chipPCenter{0%{transform:translateX(-50%) scale(1)}30%{transform:translateX(-50%) scale(1.22)}100%{transform:translateX(-50%) scale(1)}}
 .chip .l1{font-size:.48rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
 .chip .l2{font-family:var(--disp);font-size:.68rem;letter-spacing:.08em;color:var(--lvl,var(--teal))}
 .chip .led{width:7px;height:7px;background:var(--lvl,var(--teal));box-shadow:0 0 8px var(--lvl,var(--teal))}
-/* alert centered, same vertical band as audio/hamburger */
-#chip{position:absolute;left:50%;top:10px;transform:translateX(-50%);margin:0}
-#chip.pulse{animation:chipPCenter .45s ease}
-/* audio fixed next to hamburger (right) */
+/* top-right cluster: alert · audio · hamburger */
+#chip{position:fixed;top:10px;right:148px;left:auto;transform:none;margin:0;z-index:22}
 #muteHud{position:fixed;top:10px;right:56px;z-index:22;cursor:pointer}
 .burger{display:none}
 .burger span{display:block;width:18px;height:2px;background:var(--teal);margin:2px 0}
-/* hamburger + minimap: top-right on all viewports */
 .burger-float{position:fixed;top:10px;right:10px;left:auto;z-index:22;width:40px;height:36px;display:grid;place-items:center;background:rgba(10,15,21,.92);border:1px solid var(--line);box-sizing:border-box}
 .burger-float span{display:block;width:18px;height:2px;background:var(--teal);margin:2.5px 0}
 .mini{position:fixed;top:56px;right:10px;left:auto;z-index:20;background:rgba(10,15,21,.85);border:1px solid var(--line);padding:3px;border-radius:4px}
 @media(max-width:620px){
-  .hud{gap:.35rem;padding:8px .5rem;padding-right:56px;min-height:52px;justify-content:flex-start}
+  .hud{gap:.35rem;padding:8px .5rem;min-height:52px;justify-content:flex-start}
   .logo{font-size:.78rem}
-  .outpost-counter{top:50px;left:10px;font-size:.46rem}
   .chip{padding:.28rem .4rem;gap:.25rem;min-height:34px}
   .chip .l1{font-size:.4rem;letter-spacing:.1em}
   .chip .l2{font-size:.58rem}
   .chip .led{width:6px;height:6px}
-  #chip{top:8px}
+  #chip{top:8px;right:130px}
   #muteHud{top:8px;right:52px}
   .burger-float{top:8px;right:8px;height:34px}
   .mini{transform:scale(.78);transform-origin:top right;top:50px;right:8px}
+  .outpost-counter{top:148px;right:8px;font-size:.44rem}
+  .outpost-counter b{font-size:.62rem}
   .tbtns #mute{display:none}
 }
 .prompt{position:fixed;left:50%;bottom:130px;transform:translateX(-50%);z-index:20;display:none;align-items:center;gap:.7rem;background:rgba(10,15,21,.94);border:1px solid var(--teal);padding:.6rem 1rem;clip-path:var(--cham);font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
@@ -170,7 +167,7 @@ body.touch .hint{display:none}
 </header>
 <button class="chip" id="muteHud" style="--lvl:var(--teal)"><span class="led"></span><span class="l1">Audio</span><span class="l2" id="muteLbl">ON</span></button>
 <button class="burger-float" id="burgerFloat" aria-label="Map"><span></span><span></span><span></span></button>
-<div class="outpost-counter" id="outpostCounter">OUTPOST CONQUERED<br><b id="outpostCount">0/8</b></div>
+<div class="outpost-counter" id="outpostCounter">OBJECTIVES<br><b id="outpostCount">0/8</b></div>
 <canvas class="mini" id="mini" width="116" height="116"></canvas>
 
 <div class="prompt" id="prompt"><span class="led"></span> POI: <b id="pname">—</b> <span id="paction">[E] CONQUER</span></div>
