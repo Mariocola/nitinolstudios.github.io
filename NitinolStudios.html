@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>QUANTUM ERA — Third-Person Action Roguelite // Nomad Chronicles</title>
+<meta name="description" content="Infiltrate. Adapt. Escape alive. A third-person action roguelite of escalation and consequences. Chapter 01 of the Nomad Chronicles.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+@font-face {
+    font-family: "Ethnocentric";
+    src: url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.eot");
+    src: url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.eot?#iefix") format("embedded-opentype"),
+         url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.woff2") format("woff2"),
+         url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.woff") format("woff"),
+         url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.ttf") format("truetype"),
+         url("https://db.onlinewebfonts.com/t/5e7e5b88452bacd9f8b087c3223619b5.svg#Ethnocentric V2") format("svg");
+    font-display: swap;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+
+:root{
+  --bg:#06090d;
+  --bg2:#0a0f15;
+  --panel:#0e1520;
+  --line:rgba(80,220,190,.16);
+  --line-soft:rgba(80,220,190,.08);
+
+  --teal:#3af0c5;
+  --yellow:#ffd54a;
+  --orange:#ff8a3d;
+  --red:#ff4d5e;
+  --amber:#ffb454;
+
+  --text:#e7f2ef;
+  --muted:#8aa5a0;
+  --ink:#04110d;
+
+  --font-display:'Ethnocentric','Orbitron',sans-serif;
+  --font-body:'Space Grotesk',system-ui,sans-serif;
+
+  --feed-w:340px;
+
+  --cham:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+  --ease:cubic-bezier(.22,.9,.28,1);
+}
+
+html{scroll-behavior:smooth}
+html,body{overflow-x:hidden;overflow-x:clip}
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
+::selection{background:var(--teal);color:var(--ink)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+
+h1,h2,h3,h4,
+.logo,.brand,
+.btn,.cta,
+.mode-name,.biome-name,.nomad-name,.unit-code,
+.alert-name,.lvl-name,
+.stat-val,.big-title,.chan-title,
+.faq-num,.nav .cta{
+  font-family:var(--font-display);
+  font-weight:400;
+  letter-spacing:.05em;
+}
+
+.bg-grid,.bg-glow,.scanlines,.noise{position:fixed;inset:0;pointer-events:none}
+.bg-grid{
+  z-index:0;
+  background-image:
+    linear-gradient(var(--line-soft) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 30%,#000 40%,transparent 100%);
+}
+.bg-glow{
+  z-index:0;
+  background:
+    radial-gradient(700px 500px at 82% 8%,rgba(58,240,197,.10),transparent 60%),
+    radial-gradient(600px 500px at 8% 88%,rgba(255,77,94,.07),transparent 60%),
+    radial-gradient(900px 700px at 50% 120%,rgba(255,138,61,.05),transparent 60%);
+}
+.scanlines{
+  z-index:3;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px);
+  mix-blend-mode:multiply;
+}
+.noise{
+  z-index:2;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(2) infinite;
+}
+@keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(-2%,1%)}100%{transform:translate(1%,-1%)}}
+
+main,header,footer{position:relative;z-index:1}
+.wrap{width:min(1180px,92%);margin-inline:auto;max-width:100%}
+.led{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+.frame{position:relative}
+.frame::before,.frame::after,
+.frame .c::before,.frame .c::after{
+  content:"";position:absolute;width:16px;height:16px;border:1px solid var(--teal);opacity:.7;z-index:5;pointer-events:none;
+}
+.frame::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.frame::after{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.frame .c::before{bottom:-1px;left:-1px;border-right:0;border-top:0}
+.frame .c::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.7rem;
+  padding:.95rem 1.5rem;
+  font-size:.92rem;letter-spacing:.12em;text-transform:uppercase;
+  clip-path:var(--cham);
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s,color .25s;
+  position:relative;
+  white-space:nowrap;
+  max-width:100%;
+}
+.btn .arr{font-family:var(--font-body);font-weight:700;transition:transform .25s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.btn-primary{background:var(--teal);color:var(--ink)}
+.btn-primary:hover{box-shadow:0 0 32px rgba(58,240,197,.5);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal)}
+.btn-ghost:hover{background:rgba(58,240,197,.1);transform:translateY(-2px)}
+.btn-danger{background:transparent;color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange)}
+.btn-danger:hover{background:rgba(255,138,61,.12);transform:translateY(-2px)}
+.btn-sm{padding:.6rem 1.1rem;font-size:.8rem}
+
+.ticker,.nav,footer{width:100%}
+
+.ticker{
+  border-block:1px solid var(--line);
+  background:var(--bg2);
+  overflow:hidden;white-space:nowrap;
+  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+  position:relative;z-index:2;
+}
+.ticker-track{display:inline-flex;gap:0;animation:marquee 28s linear infinite;padding:.55rem 0}
+.ticker span{padding:0 1.4rem;display:inline-flex;align-items:center;gap:.6rem}
+.ticker b{color:var(--teal);font-weight:600}
+.ticker .dot{color:var(--amber)}
+.ticker .esc{color:var(--orange)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(6,9,13,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{
+  display:flex;align-items:center;gap:1rem;
+  padding:.7rem 0;min-height:64px;
+}
+.brand{display:flex;align-items:center;gap:.7rem;flex:0 0 auto}
+.logo{font-size:1.15rem;color:var(--text);letter-spacing:.08em;white-space:nowrap}
+.logo em{font-style:normal;color:var(--teal)}
+.brand small{
+  font-family:var(--font-body);font-size:.62rem;letter-spacing:.24em;
+  color:var(--muted);text-transform:uppercase;
+  line-height:1.25;white-space:nowrap;align-self:center;
+}
+.nav-cta{display:flex;align-items:center;gap:.8rem;margin-left:auto}
+.menu-btn{display:flex;flex-direction:column;gap:5px;padding:.45rem;flex:0 0 auto}
+.menu-btn span{width:24px;height:2px;background:var(--teal);transition:.3s var(--ease)}
+.menu-btn[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] span:nth-child(2){opacity:0}
+.menu-btn[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.mobile-panel{
+  display:block;max-height:0;overflow:hidden;
+  transition:max-height .45s var(--ease);
+  border-top:1px solid var(--line);
+  background:rgba(6,9,13,.96);backdrop-filter:blur(12px);
+}
+.mobile-panel.open{max-height:560px}
+.panel-in{display:grid;grid-template-columns:1fr}
+.mobile-panel a{
+  display:flex;gap:.7rem;align-items:center;
+  padding:.95rem 4%;
+  border-bottom:1px solid var(--line-soft);
+  font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  transition:color .2s,background .2s;
+}
+.mobile-panel a:hover{color:var(--teal);background:rgba(58,240,197,.05)}
+.mobile-panel a i{color:var(--teal);font-style:normal;font-size:.7rem}
+
+.hero{padding:4.5rem 0 3.5rem;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}
+.hero-grid>*{min-width:0}
+.hero-copy .kicker{
+  font-size:.7rem;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+  display:flex;align-items:center;gap:.6rem;margin-bottom:1.4rem;
+}
+.big-title{
+  font-size:clamp(2.6rem,6.4vw,5.2rem);line-height:.96;color:var(--text);
+  text-transform:uppercase;position:relative;margin:.2rem 0 .4rem;
+  overflow-wrap:normal;
+  word-break:normal;
+  hyphens:none;
+}
+.big-title .alt{color:var(--teal);text-shadow:0 0 30px rgba(58,240,197,.35)}
+.big-title::after{
+  content:"";position:absolute;left:0;top:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--teal),transparent);
+  opacity:.6;animation:sweep 4s var(--ease) infinite;
+}
+@keyframes sweep{0%{top:0;opacity:0}10%{opacity:.6}50%{top:100%;opacity:.6}55%,100%{top:100%;opacity:0}}
+.tagline{font-size:1.15rem;color:var(--teal);letter-spacing:.18em;text-transform:uppercase;font-weight:500;margin:.6rem 0 .4rem}
+.chap{font-size:.72rem;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;margin-bottom:1.3rem}
+.chap b{color:var(--teal);font-weight:600}
+.hero-desc{color:var(--muted);max-width:52ch;margin-bottom:1.8rem;font-size:1.02rem}
+.hero-cta{display:flex;flex-wrap:wrap;gap:1rem;align-items:center}
+.signal{margin-top:1.4rem;font-size:.78rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.signal a{color:var(--teal);font-weight:600;transition:.2s}
+.signal a:hover{color:var(--amber);text-shadow:0 0 12px rgba(255,180,84,.5)}
+
+.hero-visual{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1rem;
+  min-width:0;
+}
+
+.robot-frame{
+  position:relative;
+  border:1px solid var(--line);
+  aspect-ratio:9/16;
+  width:100%;
+  max-width:var(--feed-w);
+  background:#000;
+  overflow:hidden;
+  clip-path:polygon(0 0,100% 0,100% 100%,14px 100%,0 calc(100% - 14px));
+  box-shadow:0 30px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(58,240,197,.08) inset;
+}
+
+.robot-frame iframe{
+  position:absolute;
+  inset:0;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  border:0;
+  display:block;
+  background:#000;
+}
+
+.robot-frame::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:
+    linear-gradient(var(--teal),var(--teal)) center/1px 34px no-repeat,
+    linear-gradient(var(--teal),var(--teal)) center/34px 1px no-repeat;
+  opacity:.55;mix-blend-mode:screen;
+}
+.reticle-ring{
+  position:absolute;top:50%;left:50%;width:96px;height:96px;
+  transform:translate(-50%,-50%);border:1px solid var(--teal);border-radius:50%;
+  opacity:.35;pointer-events:none;z-index:3;
+  box-shadow:0 0 40px rgba(58,240,197,.15) inset;
+}
+.reticle-ring::before,.reticle-ring::after{
+  content:"";position:absolute;background:var(--teal);opacity:.6;
+}
+.reticle-ring::before{top:-8px;left:50%;width:1px;height:8px;transform:translateX(-50%)}
+.reticle-ring::after{bottom:-8px;left:50%;width:1px;height:8px;transform:translateX(-50%)}
+
+.feed-tag{
+  position:absolute;top:.7rem;left:.8rem;z-index:4;
+  display:flex;align-items:center;gap:.5rem;
+  background:rgba(6,9,13,.72);border:1px solid var(--line);
+  padding:.32rem .7rem;font-family:var(--font-body);
+  font-size:.6rem;letter-spacing:.24em;color:var(--teal);text-transform:uppercase;
+  backdrop-filter:blur(4px);
+  pointer-events:none;
+}
+.rec-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1.2s infinite}
+.feed-coords{
+  position:absolute;bottom:.6rem;right:.8rem;z-index:4;
+  font-family:var(--font-body);font-size:.58rem;letter-spacing:.18em;
+  color:var(--teal);text-transform:uppercase;opacity:.8;
+  background:rgba(6,9,13,.6);padding:.22rem .5rem;border:1px solid var(--line-soft);
+  pointer-events:none;
+}
+
+.live-feed-fallback{
+  position:absolute;inset:0;z-index:2;background:#000;
+  display:flex;align-items:center;justify-content:center;
+}
+.live-feed-fallback img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:saturate(.8) contrast(1.05);
+}
+.live-feed-fallback .btn{position:relative;z-index:3}
+
+.hud-card{
+  position:static;
+  width:100%;
+  max-width:var(--feed-w);
+  background:rgba(10,15,21,.94);
+  border:1px solid var(--line);
+  padding:.9rem 1rem;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+}
+.hud-card h4{font-size:.8rem;color:var(--teal);letter-spacing:.1em;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.hud-row{display:flex;justify-content:space-between;font-size:.72rem;letter-spacing:.12em;color:var(--muted);padding:.2rem 0;border-top:1px dashed var(--line-soft)}
+.hud-row b{color:var(--text);font-weight:600}
+.hud-row .status{color:var(--teal)}
+.mini-ticker{
+  margin-top:.5rem;
+  overflow:hidden;
+  width:100%;
+  border-top:1px solid var(--line);
+  padding-top:.45rem;
+}
+.mini-ticker div{display:inline-flex;white-space:nowrap;animation:marquee 16s linear infinite;font-size:.62rem;letter-spacing:.2em;color:var(--amber);text-transform:uppercase}
+.mini-ticker span{padding:0 .9rem}
+
+section{padding:5.5rem 0;position:relative}
+.sec-head{margin-bottom:3rem;max-width:760px}
+.sec-head h2{font-size:clamp(1.8rem,3.8vw,3rem);text-transform:uppercase;line-height:1.05;margin:.9rem 0 .8rem}
+.sec-head h2 .hl{color:var(--teal)}
+.sec-head p{color:var(--muted);font-size:1.05rem}
+.file-tag{font-size:.7rem;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;display:flex;align-items:center;gap:.6rem}
+.file-tag::before{content:"▸";color:var(--teal)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin:2.4rem 0}
+.steps>*{min-width:0}
+.step{background:var(--panel);border:1px solid var(--line);padding:1.6rem;position:relative;transition:.3s var(--ease)}
+.step:hover{transform:translateY(-5px);border-color:var(--teal)}
+.step .n{font-family:var(--font-display);font-size:.75rem;color:var(--amber);letter-spacing:.2em}
+.step h3{font-size:1.35rem;text-transform:uppercase;margin:.7rem 0 .5rem;color:var(--text)}
+.step p{color:var(--muted);font-size:.94rem}
+.step::after{content:"";position:absolute;right:0;top:0;width:34px;height:34px;background:linear-gradient(225deg,var(--teal) 0 1px,transparent 1px)}
+.step:nth-child(2)::after{background:linear-gradient(225deg,var(--yellow) 0 1px,transparent 1px)}
+.step:nth-child(3)::after{background:linear-gradient(225deg,var(--red) 0 1px,transparent 1px)}
+
+.alert-meter{border:1px solid var(--line);background:var(--bg2);padding:1.6rem;margin-top:1rem}
+.alert-meter h4{font-size:.8rem;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-bottom:1.2rem;font-family:var(--font-body);font-weight:600}
+.alert-track{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.alert-track::before{content:"";position:absolute;top:19px;left:5%;width:90%;height:2px;background:linear-gradient(90deg,var(--teal),var(--yellow),var(--orange),var(--red))}
+.lvl{text-align:center;position:relative;padding-top:0;min-width:0}
+.lvl .node{width:40px;height:40px;margin:0 auto;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-size:.7rem;background:var(--bg);border:2px solid var(--teal);color:var(--teal);position:relative;z-index:1;transition:.3s}
+.lvl:nth-child(2) .node{border-color:var(--yellow);color:var(--yellow)}
+.lvl:nth-child(3) .node{border-color:var(--orange);color:var(--orange)}
+.lvl:nth-child(4) .node{border-color:var(--red);color:var(--red)}
+.lvl .lvl-name{display:block;margin-top:.7rem;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em}
+.lvl small{display:block;font-size:.64rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-top:.15rem;font-family:var(--font-body)}
+.lvl:hover .node{transform:scale(1.15);box-shadow:0 0 22px currentColor}
+
+.quote{
+  margin-top:2.6rem;border-left:3px solid var(--teal);padding:1.1rem 1.6rem;
+  background:linear-gradient(90deg,rgba(58,240,197,.07),transparent);
+  color:var(--text);font-size:1.08rem;max-width:820px;
+}
+.quote b{color:var(--teal);font-weight:600}
+
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.modes>*{min-width:0}
+.mode{background:var(--panel);border:1px solid var(--line);padding:0;overflow:hidden;transition:.35s var(--ease);position:relative}
+.mode:hover{transform:translateY(-6px);border-color:var(--mode,var(--teal))}
+.mode .bar-top{height:3px;background:var(--mode,var(--teal))}
+.mode-body{padding:1.7rem}
+.mode .tag{font-size:.68rem;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;font-family:var(--font-body)}
+.mode-name{font-size:1.7rem;text-transform:uppercase;color:var(--mode,var(--teal));margin:.6rem 0 .7rem}
+.mode p{color:var(--muted);font-size:.95rem}
+.mode .glyph{position:absolute;right:1rem;top:1rem;font-size:.8rem;color:var(--mode,var(--teal));opacity:.7}
+.mode.silent{--mode:var(--teal)}
+.mode.tactical{--mode:var(--yellow)}
+.mode.chaotic{--mode:var(--red)}
+
+.biomes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.biomes>*{min-width:0}
+.biome{border:1px solid var(--line);background:var(--panel);overflow:hidden;transition:.35s var(--ease)}
+.biome:hover{transform:translateY(-6px);border-color:var(--teal)}
+.biome .ph{overflow:hidden;position:relative;aspect-ratio:16/9;background:#000}
+.biome .ph img{
+  width:100%;height:100%;object-fit:cover;object-position:center;
+  transition:transform .8s var(--ease);filter:saturate(.9);
+}
+.biome:hover .ph img{transform:scale(1.08)}
+.biome .ph .bid{position:absolute;top:.8rem;left:.8rem;background:rgba(6,9,13,.85);border:1px solid var(--line);padding:.3rem .6rem;font-size:.62rem;letter-spacing:.22em;color:var(--amber);text-transform:uppercase;font-family:var(--font-body);z-index:2}
+.biome .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(6,9,13,.85));z-index:1}
+.biome-body{padding:1.4rem 1.5rem 1.7rem}
+.biome-name{font-size:1.3rem;text-transform:uppercase;color:var(--text);margin-bottom:.5rem}
+.biome p{color:var(--muted);font-size:.92rem}
+
+.nomads{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem}
+.nomads>*{min-width:0}
+.nomad{border:1px solid var(--line);background:var(--panel);overflow:hidden;transition:.35s var(--ease);position:relative}
+.nomad:hover{transform:translateY(-7px);border-color:var(--cls,var(--teal));box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.nomad .cls{position:absolute;top:.9rem;right:.9rem;z-index:2;background:var(--cls,var(--teal));color:var(--ink);padding:.28rem .7rem;font-size:.66rem;letter-spacing:.2em;font-weight:700;text-transform:uppercase;font-family:var(--font-body);clip-path:var(--cham)}
+.nomad .ph{aspect-ratio:16/9;overflow:hidden;position:relative}
+.nomad .ph img{
+  width:100%;height:100%;object-fit:cover;object-position:center;
+  filter:saturate(.8) contrast(1.05);transition:transform .8s var(--ease);
+}
+.nomad:hover .ph img{transform:scale(1.07)}
+.nomad .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,var(--panel))}
+.nomad-body{padding:1.4rem 1.5rem 1.7rem}
+.unit-code{font-size:.78rem;color:var(--cls,var(--teal));letter-spacing:.18em}
+.nomad-name{font-size:1.8rem;text-transform:uppercase;color:var(--text);margin:.3rem 0 .6rem}
+.nomad-body p{color:var(--muted);font-size:.9rem;margin-bottom:1.1rem}
+.stats{display:grid;gap:.55rem}
+.stat{display:grid;grid-template-columns:44px 1fr 34px;align-items:center;gap:.7rem}
+.stat .lab{font-size:.66rem;letter-spacing:.2em;color:var(--muted);font-family:var(--font-body)}
+.stat .bar{height:6px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.stat .bar i{position:absolute;inset:0;width:0;background:var(--cls,var(--teal));transition:width 1s var(--ease)}
+.stat-val{font-size:.85rem;text-align:right;color:var(--text)}
+.nomad.medium{--cls:var(--teal)}
+.nomad.light{--cls:var(--yellow)}
+.nomad.heavy{--cls:var(--orange)}
+.fail-line{margin-top:2.2rem;text-align:center;font-size:.8rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;font-family:var(--font-body)}
+.fail-line b{color:var(--red)}
+
+.playtest{background:var(--bg2);border-block:1px solid var(--line)}
+.pt-grid{display:grid;grid-template-columns:1fr;gap:2rem}
+.pt-grid>*{min-width:0}
+.pt-list{margin:1.4rem 0 1.8rem;display:grid;gap:.8rem}
+.pt-list li{display:flex;gap:.8rem;color:var(--muted);font-size:.98rem}
+.pt-list li::before{content:"▸";color:var(--teal)}
+.pt-list b{color:var(--text);font-weight:600}
+
+.faq{max-width:820px}
+.faq-item{border:1px solid var(--line);background:var(--panel);margin-bottom:.8rem;transition:border-color .25s}
+.faq-item.open{border-color:var(--teal)}
+.faq-q{width:100%;display:flex;align-items:center;gap:1rem;text-align:left;padding:1.2rem 1.4rem}
+.faq-num{font-size:.75rem;color:var(--amber)}
+.faq-q .q-text{font-family:var(--font-body);font-weight:600;font-size:1.02rem;letter-spacing:.02em;color:var(--text);flex:1;min-width:0}
+.faq-q .plus{font-family:var(--font-body);color:var(--teal);font-size:1.3rem;transition:transform .3s var(--ease)}
+.faq-item.open .plus{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
+.faq-item.open .faq-a{max-height:260px}
+.faq-a p{padding:0 1.4rem 1.4rem 3.4rem;color:var(--muted);font-size:.95rem}
+
+.channels{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.channels>*{min-width:0}
+.chan{border:1px solid var(--line);background:var(--panel);padding:1.8rem;display:flex;flex-direction:column;gap:.8rem;transition:.3s var(--ease);position:relative;overflow:hidden}
+.chan:hover{transform:translateY(-6px);border-color:var(--ch,var(--teal))}
+.chan .ch-tag{font-size:.66rem;letter-spacing:.26em;color:var(--ch,var(--teal));text-transform:uppercase;font-family:var(--font-body)}
+.chan-title{font-size:1.4rem;text-transform:uppercase;color:var(--text)}
+.chan .sub{font-size:.72rem;letter-spacing:.14em;color:var(--amber);text-transform:uppercase}
+.chan p{color:var(--muted);font-size:.92rem;flex:1}
+.chan .btn{align-self:flex-start}
+.chan.a{--ch:var(--teal)}.chan.b{--ch:var(--orange)}.chan.c{--ch:var(--yellow)}
+.chan::before{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;background:radial-gradient(circle,var(--ch,var(--teal)) 0,transparent 70%);opacity:.12}
+
+.final{text-align:center;background:radial-gradient(600px 300px at 50% 0,rgba(58,240,197,.1),transparent)}
+.final h2{font-size:clamp(2rem,5vw,3.6rem);text-transform:uppercase;margin-bottom:2rem}
+.final .hero-cta{justify-content:center}
+
+footer{border-top:1px solid var(--line);background:var(--bg2);padding:4rem 0 2rem}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:3rem}
+.foot-grid>*{min-width:0}
+.foot-grid h5{font-size:.7rem;letter-spacing:.26em;color:var(--amber);text-transform:uppercase;margin-bottom:1rem;font-family:var(--font-body);font-weight:600}
+.foot-grid a{display:block;color:var(--muted);font-size:.9rem;padding:.28rem 0;transition:.2s}
+.foot-grid a:hover{color:var(--teal);transform:translateX(4px)}
+.foot-brand p{color:var(--muted);font-size:.92rem;margin-top:.9rem;max-width:34ch}
+.foot-bottom{border-top:1px solid var(--line);padding-top:1.4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.7rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.foot-bottom .on{color:var(--teal)}
+
+.esc-hud{
+  position:fixed;
+  left:1.2rem;bottom:1.2rem;
+  z-index:60;
+  background:rgba(10,15,21,.92);
+  border:1px solid var(--line);
+  padding:.7rem 1rem;
+  display:flex;align-items:center;gap:.7rem;
+  backdrop-filter:blur(8px);
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+  transition:opacity .3s var(--ease),transform .3s var(--ease);
+}
+.esc-hud.is-hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+.esc-hud .led{background:var(--lvl,var(--teal));box-shadow:0 0 12px var(--lvl,var(--teal))}
+.esc-hud .l1{font-size:.6rem;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;font-family:var(--font-body)}
+.esc-hud .l2{font-family:var(--font-display);font-size:.9rem;letter-spacing:.12em;color:var(--lvl,var(--teal))}
+
+.quick-cta{
+  position:fixed;right:1.2rem;bottom:1.2rem;z-index:60;
+  display:flex;flex-direction:column;gap:.6rem;align-items:flex-end;
+}
+.quick-cta .btn{box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.quick-cta .btn-ghost{background:rgba(58,240,197,.06)}
+.quick-close{
+  position:absolute;top:-12px;right:-12px;width:24px;height:24px;
+  background:var(--bg2);border:1px solid var(--line);color:var(--muted);
+  display:grid;place-items:center;font-size:.75rem;border-radius:50%;
+  cursor:pointer;
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+  .stat .bar i{width:var(--w,70%)}
+}
+
+@media(min-width:621px){
+  .panel-in{grid-template-columns:repeat(3,1fr);gap:.2rem 2.5rem;padding:1.1rem 4% 1.4rem}
+  .mobile-panel a{border-bottom:0;padding:.5rem 0}
+}
+
+@media(max-width:980px){
+  :root{--feed-w:300px}
+  .hero{padding:3.5rem 0 3rem}
+  .hero-grid{grid-template-columns:1fr;gap:2.2rem}
+  .big-title{font-size:clamp(2rem,9vw,3.4rem)}
+  .steps,.modes,.biomes,.nomads,.channels{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:620px){
+  :root{--feed-w:260px}
+
+  .nav-in{gap:.6rem;padding:.6rem 0;min-height:56px}
+  .brand{gap:.5rem}
+  .brand small{display:none}
+  .logo{font-size:1.02rem}
+  .nav-cta{gap:0}
+  .nav-cta .btn{display:none}
+
+  .hero-copy{text-align:center}
+  .hero-copy .kicker{justify-content:center}
+  .big-title{font-size:clamp(1.7rem,10vw,2.6rem)}
+  .tagline{font-size:1rem;letter-spacing:.14em}
+  .hero-desc{margin-inline:auto}
+  .hero-cta{justify-content:center}
+  .hero-cta .btn{
+    font-size:.78rem;letter-spacing:.09em;
+    padding:.85rem 1.1rem;
+    white-space:normal;text-align:center;
+  }
+  .signal{text-align:center}
+
+  .steps,.modes,.biomes,.nomads,.channels{grid-template-columns:1fr}
+
+  .alert-meter{padding:1.2rem}
+  .alert-track{grid-template-columns:1fr;gap:1.05rem}
+  .alert-track::before{
+    top:20px;bottom:20px;left:19px;
+    width:2px;height:auto;
+    background:linear-gradient(180deg,var(--teal),var(--yellow),var(--orange),var(--red));
+  }
+  .lvl{display:flex;align-items:center;gap:.9rem;text-align:left}
+  .lvl .node{margin:0;flex:0 0 40px}
+  .lvl .lvl-name{margin-top:0;font-size:1rem;letter-spacing:.06em}
+  .lvl small{display:none}
+
+  .esc-hud{
+    left:auto;
+    right:.8rem;
+    bottom:auto;
+    top:64px;
+    padding:.5rem .75rem;
+  }
+  .esc-hud.is-hidden{transform:translateY(-8px)}
+  .esc-hud .l2{font-size:.8rem}
+  .esc-hud .l1{font-size:.55rem}
+
+  .quick-cta{
+    left:.7rem;right:.7rem;
+    bottom:calc(.7rem + env(safe-area-inset-bottom,0px));
+    flex-direction:row;align-items:stretch;gap:.5rem;
+    background:rgba(6,9,13,.9);
+    border:1px solid var(--line);
+    padding:.55rem;
+    backdrop-filter:blur(10px);
+    box-shadow:0 16px 40px rgba(0,0,0,.5);
+  }
+  .quick-cta .btn{
+    flex:1;justify-content:center;
+    min-height:44px;
+    padding:.65rem .5rem;
+    font-size:.7rem;letter-spacing:.1em;
+  }
+  .quick-close{top:-11px;right:-6px}
+}
+</style>
+</head>
+<body id="top">
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="noise"></div>
+<div class="scanlines"></div>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span><b>SYSTEM LINK: ESTABLISHED</b></span><span class="dot">◆</span>
+    <span>3 NOMADS // 3 BIOMES</span><span class="dot">◆</span>
+    <span>WISHLIST OPEN ON STEAM</span><span class="dot">◆</span>
+    <span>PLAYTEST REQUEST ACCESS — <b>LIVE</b></span><span class="dot">◆</span>
+    <span class="esc">SAFE ▸ DETECTED ▸ WANTED  ALERT</span><span class="dot">◆</span>
+    <span><b>SYSTEM LINK: ESTABLISHED</b></span><span class="dot">◆</span>
+    <span>3 NOMADS // 3 BIOMES</span><span class="dot">◆</span>
+    <span>WISHLIST OPEN ON STEAM</span><span class="dot">◆</span>
+    <span>PLAYTEST REQUEST ACCESS — <b>LIVE</b></span><span class="dot">◆</span>
+    <span class="esc">SAFE ▸ DETECTED ▸ WANTED  ALERT</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand">
+      <span class="logo">QUANTUM<em>&nbsp;ERA</em></span>
+      <small>Nomad Chronicles // CH.01</small>
+    </a>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Wishlist <span class="arr">↗</span></a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-controls="mobilePanel" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-panel" id="mobilePanel">
+    <div class="panel-in">
+      <a href="#loop"><i>01</i>Escalation</a>
+      <a href="#styles"><i>02</i>Playstyles</a>
+      <a href="#biomes"><i>03</i>Biomes</a>
+      <a href="#nomads"><i>04</i>Nomads</a>
+      <a href="#playtest"><i>05</i>Playtest</a>
+      <a href="#faq"><i>06</i>FAQ</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="kicker"><span class="led"></span> Return Protocol // Classified Island // G.I.O.N.N-1 Online</p>
+      <h1 class="big-title">QUANTUM<wbr><span class="alt">ERA</span></h1>
+      <p class="tagline">Infiltrate. Adapt. Escape alive.</p>
+      <p class="chap">Nomad Chronicles — <b>CH. 01 ✔</b></p>
+      <p class="hero-desc">A third-person action roguelite built around escalation and consequences. You control three reconnaissance robots — each with a different weight class — dropped onto a hostile island of autonomous machines guarding energy cores. Every action you take is monitored, evaluated, answered.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Wishlist on Steam <span class="arr">↗</span></a>
+        <a class="btn btn-ghost cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Request Playtest Access <span class="arr">⟶</span></a>
+      </div>
+      <p class="signal">Or find us on signal ▸ <a href="https://discord.gg/tmpxhBayKn" target="_blank" rel="noopener">Discord</a> / <a href="https://www.tiktok.com/@quantum_era_game" target="_blank" rel="noopener">TikTok</a></p>
+    </div>
+
+    <div class="hero-visual frame"><span class="c"></span>
+
+      <div class="robot-frame" id="robotFrame">
+        <iframe
+          id="liveFeedIframe"
+          src="https://www.tiktok.com/player/v1/7688479371291659552?autoplay=1&loop=1&volume=0&music_info=0&description=0&rel=0&cover=0&progress_bar=0&controls=0&embed_from=0"
+          title="G.I.O.N.N-1 Live Optics Feed"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowfullscreen
+          loading="eager"></iframe>
+
+        <div class="live-feed-fallback" id="liveFeedFallback" hidden>
+          <img
+            src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4307950/26bd14abc24e633ffd9f2f9b4c9749035767d51a/header.jpg?t=1790197207"
+            alt="Quantum Era gameplay frame">
+          <a class="btn btn-primary btn-sm cta" href="https://www.tiktok.com/@quantum_era_game/video/7688479371291659552" target="_blank" rel="noopener">
+            Open Feed <span class="arr">↗</span>
+          </a>
+        </div>
+
+        <span class="feed-tag"><span class="rec-dot"></span> Live Feed // G.I.O.N.N-1 Optics</span>
+        <span class="reticle-ring"></span>
+        <span class="feed-coords">N 45°28'12" // E 9°11'04"</span>
+      </div>
+
+      <div class="hud-card">
+        <h4><span class="led"></span> Unit G.I.O.N.N-1 — Linked</h4>
+        <div class="hud-row"><span>SYNC RATE</span><b id="syncRate">91.2%</b></div>
+        <div class="hud-row"><span>CORE TEMP</span><b>241°K</b></div>
+        <div class="hud-row"><span>ALERT LVL</span><b class="status" id="heroStatus">SAFE</b></div>
+        <div class="mini-ticker" aria-hidden="true">
+          <div>
+            <span>DETECTED ▸ WANTED  ALERT ◆</span><span>3 NOMADS // 3 BIOMES ◆</span><span>SOMETIMES THE SMARTEST MOVE IS TO RUN ◆</span><span>EXPLORE, FIGHT, UPGRADE ◆</span>
+            <span>DETECTED ▸ WANTED ▸ ALERT ◆</span><span>3 NOMADS // 3 BIOMES ◆</span><span>SOMETIMES THE SMARTEST MOVE IS TO RUN ◆</span><span>EXPLORE, FIGHT, UPGRADE ◆</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="loop">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">File 01 // The Island Reacts</p>
+      <h2>Detection. <span class="hl">Escalation.</span> Termination.</h2>
+      <p>Nothing on the island is passive. Enemies respond to noise, combat, and visibility — and every sortie you make feeds their awareness.</p>
+    </div>
+
+    <div class="steps">
+      <article class="step reveal d1 frame"><span class="c"></span>
+        <span class="n">Step 01</span>
+        <h3>Detection</h3>
+        <p>Being spotted raises local alert levels. Sound carries. Shadows are borrowed time.</p>
+      </article>
+      <article class="step reveal d2 frame"><span class="c"></span>
+        <span class="n">Step 02</span>
+        <h3>Escalation</h3>
+        <p>High attention triggers a rapid enemy response. The island shifts from patrol to pursuit.</p>
+      </article>
+      <article class="step reveal d3 frame"><span class="c"></span>
+        <span class="n">Step 03</span>
+        <h3>Terminate</h3>
+        <p>Fail to disengage, and heavy reinforcements are deployed. At that point, the smartest move is knowing when to run.</p>
+      </article>
+    </div>
+
+    <div class="alert-meter reveal">
+      <h4>// Alert Levels</h4>
+      <div class="alert-track">
+        <div class="lvl"><span class="node">01</span><span class="lvl-name" style="color:var(--teal)">Safe</span><small>Patrol state</small></div>
+        <div class="lvl"><span class="node">02</span><span class="lvl-name" style="color:var(--yellow)">Detected</span><small>Aware</small></div>
+        <div class="lvl"><span class="node">03</span><span class="lvl-name" style="color:var(--orange)">Wanted</span><small>Pursuit</small></div>
+        <div class="lvl"><span class="node">04</span><span class="lvl-name" style="color:var(--red)">Alert</span><small>Heavy response</small></div>
+      </div>
+    </div>
+
+    <blockquote class="quote reveal">Sometimes the smartest move isn't to win the fight — it's <b>knowing when to run</b>. Infiltrate outposts, unlock powerups, and escape alive before the island turns against you.</blockquote>
+  </div>
+</section>
+
+<section id="styles">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">File 02 // There Is No Correct Path</p>
+      <h2>Choose <span class="hl">How You Play</span></h2>
+      <p>The island doesn't care how you solve it — only whether you solve it. Adapt or expire.</p>
+    </div>
+
+    <div class="modes">
+      <article class="mode silent reveal d1 frame"><span class="c"></span><div class="bar-top"></div><span class="glyph">◈</span>
+        <div class="mode-body">
+          <span class="tag">Mode 01</span>
+          <h3 class="mode-name">Silent</h3>
+          <p>Move undetected and disable threats before they react. Sound is your enemy. Shadow is your ally.</p>
+        </div>
+      </article>
+      <article class="mode tactical reveal d2 frame"><span class="c"></span><div class="bar-top"></div><span class="glyph">◬</span>
+        <div class="mode-body">
+          <span class="tag">Mode 02</span>
+          <h3 class="mode-name">Tactical</h3>
+          <p>Turn the environment into a lethal weapon. The island is a tool — if you know how to break it.</p>
+        </div>
+      </article>
+      <article class="mode chaotic reveal d3 frame"><span class="c"></span><div class="bar-top"></div><span class="glyph">✕</span>
+        <div class="mode-body">
+          <span class="tag">Mode 03</span>
+          <h3 class="mode-name">Chaotic</h3>
+          <p>Go loud and force your way through the consequences. Embrace the escalation.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="biomes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">File 03 // Hostile Environments</p>
+      <h2>3 Biomes. <span class="hl">3 Threats.</span></h2>
+      <p>Procedural seeds, weather cycles, time-of-day. The island never looks the same twice.</p>
+    </div>
+
+    <div class="biomes">
+      <article class="biome reveal d1 frame"><span class="c"></span>
+        <div class="ph"><span class="bid">Biome 01</span>
+          <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4307950/c45758d0b509466a5aa099d5692f8a10c0852505/ss_c45758d0b509466a5aa099d5692f8a10c0852505.1920x1080.jpg?t=1790336248" alt="Snowy Mountains — G.I.O.N.N-1 trekking through the snowfield" loading="lazy">
+        </div>
+        <div class="biome-body">
+          <h3 class="biome-name">Snowy Mountains</h3>
+          <p>Cold, exposed, vertical. Sniper lines and falling hazards. Sound carries further here — every shot is a broadcast.</p>
+        </div>
+      </article>
+
+      <article class="biome reveal d2 frame"><span class="c"></span>
+        <div class="ph"><span class="bid">Biome 02</span><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4307950/d41420e3c0d71b760b017bca81bddfdee9ba0373/ss_d41420e3c0d71b760b017bca81bddfdee9ba0373.1920x1080.jpg?t=1790197207" alt="Forest biome" loading="lazy"></div>
+        <div class="biome-body">
+          <h3 class="biome-name">Forest</h3>
+          <p>Dense cover, ambush opportunities, limited sightlines. Stealth thrives — but so do surprises.</p>
+        </div>
+      </article>
+
+      <article class="biome reveal d3 frame"><span class="c"></span>
+        <div class="ph"><span class="bid">Biome 03</span><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4307950/9d064caf04a93f6de0c27667ae8a30bd59ee0dda/ss_9d064caf04a93f6de0c27667ae8a30bd59ee0dda.1920x1080.jpg?t=1790197207" alt="Beach and underwater biome" loading="lazy"></div>
+        <div class="biome-body">
+          <h3 class="biome-name">Beach / Underwater</h3>
+          <p>Coastal patrols and submerged complexes. Pressure, darkness, sonar ghosts. Sound is your only map.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="nomads">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">File 04 // Your 3 Chances</p>
+      <h2>3 Nomads. <span class="hl">3 Weight Classes.</span></h2>
+      <p>Each run gives you three robots to deploy. Each has a different class. When one falls, the next deploys. When all three are gone — total system failure.</p>
+    </div>
+
+    <div class="nomads">
+      <article class="nomad medium reveal d1 frame"><span class="c"></span>
+        <span class="cls">Medium</span>
+        <div class="ph"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4307950/d662cea4508a35e0e545b40b62dfc2823b0e2b7e/ss_d662cea4508a35e0e545b40b62dfc2823b0e2b7e.1920x1080.jpg?t=1790336248" alt="G.I.O.N.N-1 (Gionni) — Medium reconnaissance unit" loading="lazy"></div>
+        <div class="nomad-body">
+          <span class="unit-code">G.I.O.N.N-1</span>
+          <h3 class="nomad-name">Gionni</h3>
+          <p>Geological Intelligent Operator Neural Nomad 1. The balanced reconnaissance unit. Jack of all trades, master of survival.</p>
+          <div class="stats">
+            <div class="stat"><span class="lab">SPD</span><span class="bar"><i data-val="72"></i></span><span class="stat-val">72</span></div>
+            <div class="stat"><span class="lab">ARM</span><span class="bar"><i data-val="68"></i></span><span class="stat-val">68</span></div>
+            <div class="stat"><span class="lab">FPW</span><span class="bar"><i data-val="74"></i></span><span class="stat-val">74</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="nomad light reveal d2 frame"><span class="c"></span>
+        <span class="cls">Light</span>
+        <div class="ph"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4307950/8518d3aaf7c276c0ef82f1055581a82175f452e1/ss_8518d3aaf7c276c0ef82f1055581a82175f452e1.1920x1080.jpg?t=1790336248" alt="V.I.N.N-2 (Vinnz) — Light infiltration unit" loading="lazy"></div>
+        <div class="nomad-body">
+          <span class="unit-code">V.I.N.N-2</span>
+          <h3 class="nomad-name">Vinnz</h3>
+          <p>Versatile Infiltration Nano Nomad 2. Fast, fragile, built for silent takedowns and quick escapes. Speed is survival.</p>
+          <div class="stats">
+            <div class="stat"><span class="lab">SPD</span><span class="bar"><i data-val="95"></i></span><span class="stat-val">95</span></div>
+            <div class="stat"><span class="lab">ARM</span><span class="bar"><i data-val="42"></i></span><span class="stat-val">42</span></div>
+            <div class="stat"><span class="lab">FPW</span><span class="bar"><i data-val="58"></i></span><span class="stat-val">58</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="nomad heavy reveal d3 frame"><span class="c"></span>
+        <span class="cls">Heavy</span>
+        <div class="ph"><img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4307950/6cb9f82af3451b0d1d30f1a701b99486b6ea1227/ss_6cb9f82af3451b0d1d30f1a701b99486b6ea1227.1920x1080.jpg?t=1790336248" alt="D.A.N.N-3 (Danny) — Heavy demolition unit" loading="lazy"></div>
+        <div class="nomad-body">
+          <span class="unit-code">D.A.N.N-3</span>
+          <h3 class="nomad-name">Danny</h3>
+          <p>Demolition Armored Nuclear Nomad 3. Slow, devastating, built to absorb punishment and return it tenfold. When stealth fails.</p>
+          <div class="stats">
+            <div class="stat"><span class="lab">SPD</span><span class="bar"><i data-val="38"></i></span><span class="stat-val">38</span></div>
+            <div class="stat"><span class="lab">ARM</span><span class="bar"><i data-val="94"></i></span><span class="stat-val">94</span></div>
+            <div class="stat"><span class="lab">FPW</span><span class="bar"><i data-val="92"></i></span><span class="stat-val">92</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <p class="fail-line reveal">When one falls, deploy the next. When all three are gone — <b>total system failure.</b></p>
+  </div>
+</section>
+
+<section id="playtest" class="playtest">
+  <div class="wrap pt-grid">
+    <div class="reveal">
+      <p class="file-tag">Priority Signal // Playtest</p>
+      <h2 style="font-size:clamp(1.8rem,3.6vw,2.8rem);text-transform:uppercase;margin:.9rem 0 .8rem">Pilots Wanted For <span style="color:var(--teal)">The Next Sortie</span></h2>
+      <p style="color:var(--muted);max-width:52ch">Request access directly on Steam — one click, same page as the wishlist. You'll be notified when the developer opens more slots.</p>
+      <ul class="pt-list">
+        <li><span>Help tune the <b>escalation system</b> — your runs balance the island.</span></li>
+        <li><span>Playtest codes drop first on <b>Discord</b>. Join there so you don't miss the next wave.</span></li>
+      </ul>
+      <div class="hero-cta">
+        <a class="btn btn-primary cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Request Playtest Access <span class="arr">⟶</span></a>
+        <a class="btn btn-ghost cta" href="https://discord.gg/tmpxhBayKn" target="_blank" rel="noopener">Join Discord For Codes</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">File 05 // Briefing Room</p>
+      <h2>Debrief — <span class="hl">FAQ</span></h2>
+    </div>
+
+    <div class="faq">
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">01</span><span class="q-text">When does Quantum Era release?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>To be announced. Wishlist on Steam and you'll get pinged the moment the date locks.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">02</span><span class="q-text">How do I join the playtest?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Hit "Request access" on our Steam page — one click on the same page as the wishlist. Codes drop first on Discord, so join there too.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">03</span><span class="q-text">What are the 3 Nomads?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>Your three chances per run. G.I.O.N.N-1 (Gionni, Medium), V.I.N.N-2 (Vinnz, Light), and D.A.N.N-3 (Danny, Heavy). Each has different stats and playstyle. When one falls, deploy the next. When all three are gone — total system failure.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">04</span><span class="q-text">What platforms?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>PC via Steam at launch. Ports will follow based on wishlist and sales performance.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">05</span><span class="q-text">Is it brutally hard?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>It's arcade-intense, not punishment-sim. You have three Nomads per run. Roguelite progression carries forward.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false"><span class="faq-num">06</span><span class="q-text">What is "Nomad Chronicles"?</span><span class="plus">+</span></button>
+        <div class="faq-a"><p>The franchise. Quantum Era is Chapter 01 — the first entry in a larger universe.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="file-tag">Open Channels // Join The Grid</p>
+      <h2>Pick Your <span class="hl">Signal</span></h2>
+    </div>
+
+    <div class="channels">
+      <article class="chan a reveal d1 frame"><span class="c"></span>
+        <span class="ch-tag">Channel A — Community</span>
+        <h3 class="chan-title">The Nomad Deck</h3>
+        <span class="sub">Playtest codes drop here · Patches first</span>
+        <p>Where pilots argue playstyles, clip their best silent takedowns and talk directly to the dev team. Wave invites go here before anywhere else.</p>
+        <a class="btn btn-ghost btn-sm cta" href="https://discord.gg/tmpxhBayKn" target="_blank" rel="noopener">Join Discord <span class="arr">↗</span></a>
+      </article>
+      <article class="chan b reveal d2 frame"><span class="c"></span>
+        <span class="ch-tag">Channel B — Clips</span>
+        <h3 class="chan-title">Sixty-Second Sorties ♪</h3>
+        <span class="sub">Escalation moments · Dev chaos</span>
+        <p>Escalation moments, silent runs gone loud, dev chaos and the "when to run" tutorial your uncle can understand.</p>
+        <a class="btn btn-danger btn-sm cta" href="https://www.tiktok.com/@quantum_era_game" target="_blank" rel="noopener">Follow On TikTok <span class="arr">↗</span></a>
+      </article>
+      <article class="chan c reveal d3 frame"><span class="c"></span>
+        <span class="ch-tag">Channel C — Launch Fuel</span>
+        <h3 class="chan-title">The Wishlist</h3>
+        <span class="sub">Free · Instant · The biggest lever</span>
+        <p>Free, instant, and the single biggest lever an indie game has. Wishlists push us up the charts, into discovery queues and onto your release-day radar.</p>
+        <a class="btn btn-primary btn-sm cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Wishlist On Steam <span class="arr">↗</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap reveal">
+    <h2>Ready To <span style="color:var(--teal)">Deploy?</span></h2>
+    <div class="hero-cta">
+      <a class="btn btn-primary cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Wishlist On Steam <span class="arr">↗</span></a>
+      <a class="btn btn-ghost cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Request Playtest Access <span class="arr">⟶</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="brand"><span class="logo">QUANTUM<em>&nbsp;ERA</em></span></a>
+        <p style="font-size:.66rem;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-top:.3rem">Nomad Chronicles // CH.01</p>
+        <p>A third-person action roguelite of escalation and consequences. First entry in the Nomad Chronicles franchise.</p>
+      </div>
+      <div>
+        <h5>Navigate</h5>
+        <a href="#loop">Escalation</a>
+        <a href="#styles">Playstyles</a>
+        <a href="#biomes">Biomes</a>
+        <a href="#nomads">Nomads</a>
+        <a href="#playtest">Playtest</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h5>Signals</h5>
+        <a href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Steam — Wishlist / Playtest</a>
+        <a href="https://discord.gg/tmpxhBayKn" target="_blank" rel="noopener">Discord — Nomad Deck</a>
+        <a href="https://www.tiktok.com/@quantum_era_game" target="_blank" rel="noopener">TikTok — Clips</a>
+      </div>
+      <div>
+        <h5>Transmission</h5>
+        <a href="https://steamcommunity.com/app/4307950/discussions/" target="_blank" rel="noopener">Report a bug</a>
+        <a href="https://steamcommunity.com/app/4307950" target="_blank" rel="noopener">Steam community hub</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026/2027 Nitinol Studios — Quantum Era / Nomad Chronicles. All rights reserved.</span>
+      <span class="on"><span class="led"></span>&nbsp; G.I.O.N.N-1 Online ▸</span>
+    </div>
+  </div>
+</footer>
+
+<div class="esc-hud" id="escHud">
+  <span class="led"></span>
+  <div>
+    <div class="l1">Alert Lvl</div>
+    <div class="l2" id="escLvl">SAFE</div>
+  </div>
+</div>
+
+<div class="quick-cta" id="quickCta">
+  <button class="quick-close" id="quickClose" aria-label="Close quick actions">✕</button>
+  <a class="btn btn-primary btn-sm cta" href="https://store.steampowered.com/app/4307950/Quantum_Era/" target="_blank" rel="noopener">Wishlist <span class="arr">↗</span></a>
+  <a class="btn btn-ghost btn-sm cta" href="#playtest">Playtest</a>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var menuBtn=document.getElementById('menuBtn'),panel=document.getElementById('mobilePanel');
+  menuBtn.addEventListener('click',function(){
+    var open=panel.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded',open);
+  });
+  panel.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(){
+      panel.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded','false');
+    });
+  });
+
+  var quick=document.getElementById('quickCta');
+  var quickClose=document.getElementById('quickClose');
+  quickClose.addEventListener('click',function(){quick.hidden=true});
+
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+    },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+    var sio=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.querySelectorAll('.bar i').forEach(function(b){b.style.width=b.dataset.val+'%'});
+          sio.unobserve(e.target);
+        }
+      });
+    },{threshold:.3});
+    document.querySelectorAll('.nomad').forEach(function(el){sio.observe(el)});
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});
+    document.querySelectorAll('.bar i').forEach(function(b){b.style.width=b.dataset.val+'%'});
+  }
+
+  document.querySelectorAll('.faq-q').forEach(function(q){
+    q.addEventListener('click',function(){
+      var item=q.parentElement,open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(i){
+        i.classList.remove('open');
+        i.querySelector('.faq-q').setAttribute('aria-expanded','false');
+      });
+      if(!open){item.classList.add('open');q.setAttribute('aria-expanded','true')}
+    });
+  });
+
+  var states=[['SAFE','var(--teal)'],['DETECTED','var(--yellow)'],['WANTED','var(--orange)'],['ALERT','var(--red)']];
+  var hi=0,heroStatus=document.getElementById('heroStatus'),sync=document.getElementById('syncRate');
+  var hud=document.getElementById('escHud');
+  var lvl=document.getElementById('escLvl');
+  var footerEl=document.querySelector('footer');
+
+  function onScroll(){
+    var max=document.documentElement.scrollHeight-window.innerHeight;
+    var p=max>0?window.scrollY/max:0;
+    var i=p<.25?0:p<.5?1:p<.78?2:3;
+    if(lvl){lvl.textContent=states[i][0];lvl.style.color=states[i][1];}
+    if(hud)hud.style.setProperty('--lvl',states[i][1]);
+
+    var nearTop=window.scrollY<24;
+    var nearBottom=footerEl.getBoundingClientRect().top < window.innerHeight-20;
+    hud.classList.toggle('is-hidden', nearTop||nearBottom);
+  }
+
+  if(!reduce){
+    setInterval(function(){
+      hi=(hi+1)%states.length;
+      if(heroStatus){heroStatus.textContent=states[hi][0];heroStatus.style.color=states[hi][1];}
+    },2600);
+    setInterval(function(){
+      if(sync) sync.textContent=(89+Math.random()*4).toFixed(1)+'%';
+    },1400);
+  }
+
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
+
+  var iframe=document.getElementById('liveFeedIframe');
+  var fallback=document.getElementById('liveFeedFallback');
+  var feedLoaded=false;
+
+  if(iframe){
+    iframe.addEventListener('load',function(){
+      feedLoaded=true;
+      if(fallback) fallback.hidden=true;
+    });
+    setTimeout(function(){
+      if(!feedLoaded && fallback) fallback.hidden=false;
+    },6000);
+  }
+
+  if(reduce && iframe) iframe.remove();
+})();
+</script>
+</body>
+</html>
