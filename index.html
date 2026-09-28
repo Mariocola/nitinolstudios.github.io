@@ -94,6 +94,7 @@ canvas#world{position:fixed;inset:0;display:block;touch-action:none}
 body.touch .stick{display:block}body.touch .tbtns{display:flex}
 .hint{position:fixed;left:18px;bottom:14px;z-index:20;font-size:.62rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
 body.touch .hint{display:none}
+#vignette{position:fixed;inset:0;z-index:12;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 42%,rgba(0,0,0,.38) 100%)}
 .panel{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(4,8,10,.72);backdrop-filter:blur(6px);padding:1rem}
 .panel.open{display:flex}
 .pbox{width:min(860px,96vw);max-height:88vh;overflow-y:auto;background:rgba(10,15,21,.97);border:1px solid var(--line);clip-path:var(--cham);padding:1.6rem 1.6rem 2rem;position:relative}
@@ -159,6 +160,7 @@ body.touch .hint{display:none}
 <body>
 <canvas id="world"></canvas>
 <div class="scan"></div><div class="vig"></div>
+<div id="vignette"></div>
 <div id="flash"></div>
 <div id="nogl"><div><h2 style="font-family:var(--disp);color:var(--teal)">WEBGL UNAVAILABLE</h2><p style="margin-top:1rem">Your browser or device does not support WebGL. Please use an updated version of Chrome, Firefox or Safari.</p></div></div>
 
@@ -174,15 +176,14 @@ body.touch .hint{display:none}
 <div class="outpost-counter" id="outpostCounter">OBJECTIVES <b id="outpostCount">0/8</b></div>
 </div>
 
-<div class="prompt" id="prompt"><span class="led"></span> POI: <b id="pname">—</b> <span id="paction">[E] CONQUER</span></div>
+<div class="prompt" id="prompt"><span class="led"></span> POI: <b id="pname">—</b></div>
 <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
 <div class="tbtns">
   <button id="torch">TORCH</button>
   <button id="run">RUN</button>
   <button id="jump">JUMP</button>
-  <button class="enter" id="enter" style="display:none">CONQUER</button>
-</div>
-<div class="hint">WASD move · SHIFT sprint · SPACE jump · F torch · M mute · E enter · seabed walkable (slower) · ESC close · ☰ map</div>
+  </div>
+<div class="hint">WASD move · SHIFT sprint · SPACE jump · F torch · M mute · touch antenna to open · ESC close · ☰ map</div>
 
 <div class="panel" id="panel"><div class="pbox"><button class="pclose" id="pclose">✕</button><div id="pcontent"></div></div></div>
 <div class="menu" id="menu"><div class="mbox"><h3>▸ Fast travel — sections</h3><div id="mlist"></div><div class="mcred">© 2026/2027 Nitinol Studios — Quantum Era / Nomad Chronicles</div></div></div>
@@ -294,13 +295,55 @@ scene.background=new THREE.Color(0x050d14);
 scene.fog=new THREE.Fog(0x050d14,70,180);
 var camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.1,500);
 var starPoints=null;
+/* gradient sky dome */
+var skyUniforms={
+  topColor:{value:new THREE.Color(0x040a12)},
+  midColor:{value:new THREE.Color(0x0a1824)},
+  botColor:{value:new THREE.Color(0x12202a)},
+  offset:{value:0.12},
+  exponent:{value:0.75}
+};
+var skyMat=new THREE.ShaderMaterial({
+  uniforms:skyUniforms,
+  side:THREE.BackSide,
+  depthWrite:false,
+  fog:false,
+  vertexShader:[
+    'varying vec3 vWorldPos;',
+    'void main(){',
+    '  vec4 wp=modelMatrix*vec4(position,1.0);',
+    '  vWorldPos=wp.xyz;',
+    '  gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);',
+    '}'
+  ].join('\n'),
+  fragmentShader:[
+    'uniform vec3 topColor; uniform vec3 midColor; uniform vec3 botColor;',
+    'uniform float offset; uniform float exponent;',
+    'varying vec3 vWorldPos;',
+    'void main(){',
+    '  float h=normalize(vWorldPos+vec3(0.0,offset,0.0)).y;',
+    '  float t=max(h,0.0);',
+    '  vec3 col=mix(botColor,midColor,smoothstep(-0.15,0.25,h));',
+    '  col=mix(col,topColor,pow(t,exponent));',
+    '  gl_FragColor=vec4(col,1.0);',
+    '}'
+  ].join('\n')
+});
+var skyDome=new THREE.Mesh(new THREE.SphereGeometry(420,40,24),skyMat);
+scene.add(skyDome);
+scene.background=null; // dome is the sky
 
 (function(){
-  var N=520,p=new Float32Array(N*3);
-  for(var i=0;i<N;i++){var a=Math.random()*Math.PI*2,e=Math.random()*Math.PI*.45+.08,r=200;
-    p[i*3]=Math.cos(a)*Math.cos(e)*r;p[i*3+1]=Math.sin(e)*r;p[i*3+2]=Math.sin(a)*Math.cos(e)*r;}
-  var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));
-  starPoints=new THREE.Points(g,new THREE.PointsMaterial({color:0xbfe8ff,size:1.0,transparent:true,opacity:.85,fog:false}));
+  var N=900,p=new Float32Array(N*3),s=new Float32Array(N);
+  for(var i=0;i<N;i++){
+    var a=Math.random()*Math.PI*2,e=Math.random()*Math.PI*.48+.04,r=280+Math.random()*40;
+    p[i*3]=Math.cos(a)*Math.cos(e)*r;p[i*3+1]=Math.sin(e)*r;p[i*3+2]=Math.sin(a)*Math.cos(e)*r;
+    s[i]=0.6+Math.random()*1.6;
+  }
+  var g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  g.setAttribute('size',new THREE.BufferAttribute(s,1));
+  starPoints=new THREE.Points(g,new THREE.PointsMaterial({color:0xd4e8ff,size:1.15,transparent:true,opacity:.9,fog:false,sizeAttenuation:true,depthWrite:false}));
   scene.add(starPoints);
 })();
 var moonDirV=new THREE.Vector3(40,70,20).normalize();
@@ -335,8 +378,8 @@ sunL.shadow.camera.left=-46;sunL.shadow.camera.right=46;sunL.shadow.camera.top=4
 sunL.shadow.camera.near=10;sunL.shadow.camera.far=220;sunL.shadow.bias=-.0005;
 scene.add(sunL);
 var rim=new THREE.DirectionalLight(0x3af0c5,.3);rim.position.set(-35,25,-55);scene.add(rim);
-/* day/night: full cycle = 45s, start at night (current look) */
-var DAY_LEN=45, dayT=0.0; // 0=midnight, 0.25=sunrise, 0.5=noon, 0.75=sunset
+/* day/night: full cycle = 60s, start at night (current look) */
+var DAY_LEN=60, dayT=0.0; // 0=midnight, 0.25=sunrise, 0.5=noon, 0.75=sunset
 var _cSky=new THREE.Color(), _cFog=new THREE.Color(), _cHemi=new THREE.Color(), _cHemiG=new THREE.Color();
 function updateDayNight(dt){
   if(started) dayT=(dayT+dt/DAY_LEN)%1;
@@ -364,15 +407,21 @@ function updateDayNight(dt){
   sunL.intensity=dayAmt*1.15;
   moonL.intensity=(1-dayAmt)*0.7;
   rim.intensity=0.12+dayAmt*0.08+(1-dayAmt)*0.22;
-  // sky / fog colors
-  var nightSky=0x050d14, daySky=0x87b8d8, dawnSky=0xff6b4a;
+  // sky / fog colors → gradient dome
+  var nightTop=0x030810, nightMid=0x0a1824, nightBot=0x12202a;
+  var dayTop=0x4a90c8, dayMid=0x87b8d8, dayBot=0xc5dce8;
+  var dawnTop=0x2a1840, dawnMid=0xff6b4a, dawnBot=0xffb070;
   var nightFog=0x050d14, dayFog=0xb8d4e8, dawnFog=0xc87850;
-  _cSky.setHex(nightSky).lerp(new THREE.Color(dawnSky), dusk*0.85).lerp(new THREE.Color(daySky), dayAmt*(1-dusk*0.5));
+  var topC=new THREE.Color(nightTop).lerp(new THREE.Color(dawnTop), dusk*0.9).lerp(new THREE.Color(dayTop), dayAmt*(1-dusk*0.55));
+  var midC=new THREE.Color(nightMid).lerp(new THREE.Color(dawnMid), dusk*0.85).lerp(new THREE.Color(dayMid), dayAmt*(1-dusk*0.5));
+  var botC=new THREE.Color(nightBot).lerp(new THREE.Color(dawnBot), dusk*0.7).lerp(new THREE.Color(dayBot), dayAmt*(1-dusk*0.4));
+  skyUniforms.topColor.value.copy(topC);
+  skyUniforms.midColor.value.copy(midC);
+  skyUniforms.botColor.value.copy(botC);
   _cFog.setHex(nightFog).lerp(new THREE.Color(dawnFog), dusk*0.7).lerp(new THREE.Color(dayFog), dayAmt*(1-dusk*0.4));
-  scene.background.copy(_cSky);
   scene.fog.color.copy(_cFog);
-  scene.fog.near=50+dayAmt*30;
-  scene.fog.far=140+dayAmt*60;
+  scene.fog.near=55+dayAmt*35;
+  scene.fog.far=150+dayAmt*70;
   // hemi
   _cHemi.setHex(0x2a4a5a).lerp(new THREE.Color(0xc8e4ff), dayAmt).lerp(new THREE.Color(0xffa070), dusk*0.5);
   _cHemiG.setHex(0x0a0f14).lerp(new THREE.Color(0x3a5030), dayAmt);
@@ -1019,7 +1068,7 @@ var camH=Math.atan2(CAM_BASE.x,CAM_BASE.z);
 var camPos=new THREE.Vector3(), camLook=new THREE.Vector3(), camInit=false;
 var lookAnchor=new THREE.Vector3(), camDirU=new THREE.Vector3(), tPos=new THREE.Vector3(), tLook=new THREE.Vector3();
 var keys={},stickV={x:0,y:0},started=false,panelOpen=false,menuOpen=false;
-var yaw=Math.random()*Math.PI*2, vy=0, grounded=true, phase=0, prevStep=0, accel=0, sprintF=0, curZone=null;
+var yaw=Math.random()*Math.PI*2, vy=0, grounded=true, phase=0, prevStep=0, accel=0, sprintF=0, curZone=null, prevZoneRef=null, lastAutoZone=null;
 var landT=0, landPhase=0, prevGrounded=true, dy=0, sprintTouch=false, submerged=false, prevSubmerged=false, zoomF=1;
 var bodyScale=new THREE.Vector3(1,1,1), bodyScaleT=new THREE.Vector3(1,1,1);
 var ROBOT_R=.3, seenCount=0;
@@ -1031,7 +1080,6 @@ addEventListener('keydown',function(e){
   var k=e.key.toLowerCase();
   if(['arrowup','arrowdown','arrowleft','arrowright',' '].indexOf(k)>=0)e.preventDefault();
   keys[k]=true;
-  if(k==='e'||k==='enter')tryEnter();
   if(k==='escape'||k==='x'){closePanel();closeMenu();}
   if(k===' ')jump();
   if(k==='f')toggleTorch();
@@ -1067,7 +1115,6 @@ function bindTap(id,fn){
   el.addEventListener('pointerup',fire);
   el.addEventListener('click',fire);
 }
-bindTap('enter',tryEnter);
 bindTap('jump',jump);
 var runBtn=document.getElementById('run'), runPtr=null;
 runBtn.addEventListener('pointerdown',function(e){
@@ -1533,7 +1580,21 @@ function animate(){
   trees.forEach(function(tr){tr.g.rotation.z=Math.sin(t*1.1+tr.ph)*tr.amp*1.55;tr.g.rotation.x=Math.cos(t*.85+tr.ph)*tr.amp*1.1;});
   crowns.forEach(function(cr){cr.g.rotation.z=Math.sin(t*2.1+cr.ph)*.11;cr.g.rotation.x=Math.cos(t*1.7+cr.ph)*.07;});
   /* label pops */
-  for(var lk in labelPop){ if(labelPop[lk]>0){ labelPop[lk]-=gdt*2.2; var sc=9*(1+Math.max(0,labelPop[lk])*.22); zoneLabel[lk].scale.set(sc,sc*160/1024,1);} }
+  for(var lk in labelPop){
+    if(labelPop[lk]>0){
+      labelPop[lk]-=gdt*1.6;
+      var lp=Math.max(0,labelPop[lk]);
+      var bounce=1+Math.sin(Math.min(1,1.15-lp)*Math.PI)*0.28*Math.min(1,lp*2);
+      var sc=9*bounce;
+      if(zoneLabel[lk]){
+        zoneLabel[lk].scale.set(sc,sc*160/1024,1);
+        zoneLabel[lk].material.opacity=0.55+0.45*Math.min(1,lp*1.5);
+      }
+    } else if(zoneLabel[lk]){
+      zoneLabel[lk].scale.set(9,9*160/1024,1);
+      zoneLabel[lk].material.opacity=1;
+    }
+  }
   /* wreck ambience */
   smokeT-=dt;
   if(smokeT<=0){smokeT=.14;
@@ -1601,7 +1662,7 @@ function animate(){
       var fwd=new THREE.Vector3(-Math.sin(camH),0,-Math.cos(camH));
       var rgt=new THREE.Vector3(Math.cos(camH),0,-Math.sin(camH));
       var dir=fwd.multiplyScalar(iv.z).add(rgt.multiplyScalar(iv.x)).normalize();
-      var sp=(5.3+3.6*sprintF)*gdt*accel*waterMul;
+      var sp=(4.5+3.0*sprintF)*gdt*accel*waterMul;
       var tx=px+dir.x*sp, tz=pz+dir.z*sp;
       var hT=heightAt(tx,tz), ghCur=gh0, slopeLim=.55;
       // walkable = any surface with height (island + seabed), soft edge instead of invisible wall
@@ -1828,12 +1889,29 @@ function animate(){
 
   if(started)updateEnemies(gdt,t,px,pz);
 
-  var dMin=1e9;curZone=null;
+  var dMin=1e9;curZone=null;var nearAntenna=null;
   for(var zi=0;zi<ZONES.length;zi++){
     var dd=Math.hypot(px-ZONES[zi].x,pz-ZONES[zi].z);
     if(dd<dMin)dMin=dd;
     if(dd<3.2)curZone=ZONES[zi];
+    if(dd<1.55)nearAntenna=ZONES[zi]; // touching the antenna/mast
   }
+  // label pop when entering zone
+  if(curZone && curZone!==prevZoneRef){
+    labelPop[curZone.id]=1.15;
+    if(zoneLabel[curZone.id]){
+      var lb=zoneLabel[curZone.id];
+      lb.material.opacity=1;
+    }
+  }
+  prevZoneRef=curZone;
+  // auto conquer/open when touching antenna
+  if(nearAntenna && nearAntenna!==lastAutoZone && !panelOpen && !menuOpen && started){
+    lastAutoZone=nearAntenna;
+    curZone=nearAntenna;
+    tryEnter();
+  }
+  if(!nearAntenna) lastAutoZone=null;
   if(curZone){
     moteT-=gdt;
     if(moteT<=0){moteT=.2;
@@ -1844,10 +1922,13 @@ function animate(){
   var cp=robot.g.position;
   if(!introCam){
     if(curZone){
-      var lz=heightAt(curZone.x,curZone.z)+4.4;
-      lookAnchor.set(curZone.x,lz-1.6,curZone.z);
+      var lz=heightAt(curZone.x,curZone.z)+4.0;
+      lookAnchor.set(curZone.x,lz-1.2,curZone.z);
       var tanV=Math.tan(camera.fov*Math.PI/360), tanH=tanV*camera.aspect;
-      var dFit=Math.max(5.1/tanH,3.0/tanV)*1.08;
+      // tighter framing so labels stay readable without excessive pull-back (esp. mobile)
+      var fitMul=COARSE?0.72:0.82;
+      var dFit=Math.max(4.0/tanH,2.4/tanV)*fitMul;
+      dFit=Math.min(dFit, COARSE?9.5:12.5);
       camDirU.copy(CAM_BASE).normalize();
       tPos.copy(lookAnchor).addScaledVector(camDirU,dFit);
       tLook.copy(lookAnchor);
@@ -1916,7 +1997,7 @@ function animate(){
 addEventListener('resize',function(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 
 /* HUD */
-var prompt=document.getElementById('prompt'),pname=document.getElementById('pname'),enterBtn=document.getElementById('enter');
+var prompt=document.getElementById('prompt'),pname=document.getElementById('pname');
 var outpostCountEl=document.getElementById('outpostCount'),outpostCounterEl=document.getElementById('outpostCounter');
 var TOTAL_POIS=ZONES.length;
 function updateOutpostCounter(){
@@ -1940,14 +2021,10 @@ function hudSync(){
   alvl.textContent=states[li];
   alvl.style.color=cols[li];
   alvl.parentElement.style.setProperty('--lvl',cols[li]);
-  var paction=document.getElementById('paction');
   if(curZone&&!panelOpen){
     prompt.classList.add('on');pname.textContent=curZone.label;
-    var act=curZone.conquered?'OPEN':'CONQUER';
-    if(paction)paction.textContent='[E] '+act;
-    enterBtn.style.display='';enterBtn.textContent=act;enterBtn.classList.add('hot');
   } else {
-    prompt.classList.remove('on');enterBtn.classList.remove('hot');enterBtn.style.display='none';
+    prompt.classList.remove('on');
   }
 }
 var panel=document.getElementById('panel'),pcontent=document.getElementById('pcontent');
